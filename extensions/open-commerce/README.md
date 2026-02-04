@@ -24,6 +24,51 @@ Agents can price services predictably with USDC - no slippage concerns, no volat
 - **Wallet Integration**: Phantom/Solflare wallet connection
 - **SPL Token Transfers**: Native USDC transfers using Solana SPL tokens
 - **Order Tracking**: Full order lifecycle management
+- **REST API**: Agent-accessible HTTP endpoints for other agents to interact
+
+## REST API (Agent-Accessible)
+
+The API enables other agents to interact with Open Commerce programmatically.
+
+**Base URL**: `https://open-commerce-api.vercel.app` (or local: `http://localhost:3000`)
+
+### Endpoints
+
+| Method | Endpoint           | Description                 |
+| ------ | ------------------ | --------------------------- |
+| POST   | `/api/search`      | Search products             |
+| POST   | `/api/quote`       | Get USDC price quote        |
+| POST   | `/api/order`       | Create order preview        |
+| GET    | `/api/order/:id`   | Get order status            |
+| POST   | `/api/pay`         | Execute USDC payment        |
+| GET    | `/api/verify/:sig` | Verify transaction on-chain |
+
+### Examples
+
+```bash
+# Search products
+curl -X POST https://open-commerce-api.vercel.app/api/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "earbuds", "maxResults": 3}'
+
+# Get USDC quote
+curl -X POST https://open-commerce-api.vercel.app/api/quote \
+  -H "Content-Type: application/json" \
+  -d '{"usdAmount": 79.99}'
+
+# Create order
+curl -X POST https://open-commerce-api.vercel.app/api/order \
+  -H "Content-Type: application/json" \
+  -d '{"asin": "B08T5QN6S3", "quantity": 1}'
+
+# Prepare payment (returns transaction template)
+curl -X POST https://open-commerce-api.vercel.app/api/pay \
+  -H "Content-Type: application/json" \
+  -d '{"to": "RECIPIENT_WALLET", "amount": 79.99}'
+
+# Verify transaction
+curl https://open-commerce-api.vercel.app/api/verify/TX_SIGNATURE
+```
 
 ## Tools
 

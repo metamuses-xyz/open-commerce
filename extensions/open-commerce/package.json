@@ -1,11 +1,16 @@
 {
   "name": "@openclaw/open-commerce",
   "version": "2026.2.2",
-  "description": "Buy Amazon products with Solana payments - AI-powered shopping agent",
+  "description": "Buy Amazon products with USDC on Solana - AI-powered shopping agent with REST API",
   "type": "module",
+  "scripts": {
+    "build:api": "esbuild api/server.ts --bundle --platform=node --format=esm --outfile=api/dist/server.js --external:@solana/web3.js --external:@solana/spl-token",
+    "dev": "node --import tsx api/server.ts"
+  },
   "dependencies": {
     "@solana/spl-token": "^0.4.0",
-    "@solana/web3.js": "^1.95.0"
+    "@solana/web3.js": "^1.95.0",
+    "hono": "^4.0.0"
   },
   "devDependencies": {
     "openclaw": "workspace:*"
