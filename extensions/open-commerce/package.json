@@ -4,8 +4,9 @@
   "description": "Buy Amazon products with USDC on Solana - AI-powered shopping agent with REST API",
   "type": "module",
   "scripts": {
-    "build:api": "esbuild api/server.ts --bundle --platform=node --format=esm --outfile=api/dist/server.js --external:@solana/web3.js --external:@solana/spl-token",
-    "dev": "node --import tsx api/server.ts"
+    "deploy": "vercel deploy --prod",
+    "dev": "node --import tsx api/server.ts",
+    "test:tx": "node --import tsx scripts/test-transaction.ts"
   },
   "dependencies": {
     "@solana/spl-token": "^0.4.0",
