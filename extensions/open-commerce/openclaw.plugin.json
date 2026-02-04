@@ -1,0 +1,24 @@
+{
+  "id": "open-commerce",
+  "name": "Open Commerce",
+  "description": "Buy Amazon products with USDC on Solana - AI-powered shopping agent with stable stablecoin payments",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "treasuryAddress": {
+        "type": "string",
+        "description": "Solana address to receive USDC payments"
+      },
+      "network": {
+        "type": "string",
+        "enum": ["mainnet-beta", "devnet"],
+        "default": "devnet"
+      },
+      "usdcMintAddress": {
+        "type": "string",
+        "description": "Custom USDC mint address (optional, uses official USDC by default)"
+      }
+    }
+  }
+}
