@@ -1,11 +1,17 @@
 /**
  * Amazon order tool for order preview and placement.
  * Uses USDC for stable, predictable payments.
+ *
+ * GUARDRAILS:
+ * - Always requires preview before place action
+ * - Spending limits: $100 warning, $500 explicit confirmation
+ * - Never auto-places orders without user confirmation
  */
 
 import { Type } from "@sinclair/typebox";
 import type { OpenClawPluginApi } from "../../../../src/plugins/types.js";
 import { getProductByAsin } from "../data/products.js";
+import { getSpendingLimitWarning } from "../guardrails/confirmation.js";
 import { getPriceQuote } from "../services/price-feed.js";
 
 type OrderState = {
@@ -192,6 +198,14 @@ async function handlePreview(
   lines.push("");
   lines.push(`⏰ **Quote valid for:** 30 minutes`);
   lines.push("");
+
+  // Add spending limit warnings
+  const spendingWarning = getSpendingLimitWarning(totalUsd);
+  if (spendingWarning) {
+    lines.push(spendingWarning);
+    lines.push("");
+  }
+
   lines.push(`---`);
   lines.push(`**To place this order, type "yes" or "confirm".**`);
   lines.push(

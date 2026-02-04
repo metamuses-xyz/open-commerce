@@ -3,6 +3,8 @@
  *
  * AI-powered shopping agent that enables purchasing Amazon products
  * with Solana (SOL/USDC) payments.
+ *
+ * See SOUL.md for agent behavior guidelines and guardrails.
  */
 
 import type { OpenClawPluginApi } from "../../src/plugins/types.js";
@@ -10,6 +12,10 @@ import { createAmazonOrderTool } from "./src/tools/amazon-order.js";
 import { createAmazonSearchTool } from "./src/tools/amazon-search.js";
 import { createPriceQuoteTool } from "./src/tools/price-quote.js";
 import { createSolanaWalletTool } from "./src/tools/solana-wallet.js";
+
+// Export state and guardrail modules for external use
+export * from "./src/state/shopping-state.js";
+export * from "./src/guardrails/confirmation.js";
 
 export default function register(api: OpenClawPluginApi) {
   // Register amazon_search tool
