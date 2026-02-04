@@ -9,6 +9,7 @@ import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { handle } from "hono/vercel";
+import { searchProducts, getProductByAsin, getAllProducts } from "../src/data/products.js";
 
 // USDC Configuration
 const USDC_MINT = {
@@ -17,55 +18,6 @@ const USDC_MINT = {
 };
 const USDC_DECIMALS = 6;
 const NETWORK = "devnet";
-
-// Mock product catalog
-const PRODUCTS = [
-  {
-    asin: "B0BDHWDR12",
-    title: "Apple AirPods Pro (2nd Generation)",
-    brand: "Apple",
-    price: 199.99,
-    rating: 4.7,
-    reviewCount: 89234,
-    prime: true,
-  },
-  {
-    asin: "B09JQL3NWT",
-    title: "Samsung Galaxy Buds2 Pro",
-    brand: "Samsung",
-    price: 149.99,
-    rating: 4.5,
-    reviewCount: 12456,
-    prime: true,
-  },
-  {
-    asin: "B08T5QN6S3",
-    title: "Anker Soundcore Liberty 4 NC Wireless Earbuds",
-    brand: "Anker",
-    price: 79.99,
-    rating: 4.4,
-    reviewCount: 8901,
-    prime: true,
-  },
-  {
-    asin: "B0BXZ6Y5WQ",
-    title: "USB C Cable 3-Pack 6ft Fast Charging",
-    brand: "Anker",
-    price: 19.99,
-    rating: 4.6,
-    reviewCount: 45678,
-    prime: true,
-  },
-  {
-    asin: "B09V3KXJPB",
-    title: "Logitech MX Master 3S Wireless Mouse",
-    brand: "Logitech",
-    price: 99.99,
-    rating: 4.8,
-    reviewCount: 23456,
-    prime: true,
-  },
-];
 
 // In-memory order store (note: resets on cold start)
 const orders = new Map<string, Record<string, unknown>>();
@@ -109,24 +61,25 @@ app.get("/", (c) => {
 // Search products
 app.post("/search", async (c) => {
   const body = await c.req.json().catch(() => ({}));
-  const query = typeof body.query === "string" ? body.query.toLowerCase() : "";
+  const query = typeof body.query === "string" ? body.query.trim() : "";
   const maxResults = typeof body.maxResults === "number" ? Math.min(body.maxResults, 10) : 5;
 
   if (!query) {
     return c.json({ error: "Query is required", example: { query: "earbuds" } }, 400);
   }
 
-  const results = PRODUCTS.filter(
-    (p) =>
-      p.title.toLowerCase().includes(query) ||
-      p.brand.toLowerCase().includes(query) ||
-      p.asin.toLowerCase().includes(query),
-  )
-    .slice(0, maxResults)
-    .map((p) => ({
-      ...p,
-      priceUsdc: p.price,
-    }));
+  const products = await searchProducts(query, maxResults);
+  const results = products.map((p) => ({
+    asin: p.asin,
+    title: p.title,
+    brand: p.brand,
+    price: p.price,
+    rating: p.rating,
+    reviewCount: p.reviewCount,
+    prime: p.prime,
+    imageUrl: p.imageUrl,
+    priceUsdc: p.price,
+  }));
 
   return c.json({
     query,
@@ -162,15 +115,16 @@ app.post("/order", async (c) => {
   const quantity = typeof body.quantity === "number" ? body.quantity : 1;
 
   if (!asin) {
-    return c.json({ error: "ASIN is required", example: { asin: "B08T5QN6S3" } }, 400);
+    return c.json({ error: "ASIN is required", example: { asin: "FS-1" } }, 400);
   }
 
-  const product = PRODUCTS.find((p) => p.asin === asin);
+  const product = await getProductByAsin(asin);
   if (!product) {
+    const allProducts = await getAllProducts();
     return c.json(
       {
         error: `Product not found: ${asin}`,
-        availableProducts: PRODUCTS.map((p) => ({ asin: p.asin, title: p.title })),
+        availableProducts: allProducts.slice(0, 5).map((p) => ({ asin: p.asin, title: p.title })),
       },
       404,
     );

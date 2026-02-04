@@ -104,7 +104,7 @@ export function createAmazonOrderTool(_api: OpenClawPluginApi) {
         throw new Error("ASIN is required");
       }
 
-      const product = getProductByAsin(asin);
+      const product = await getProductByAsin(asin);
       if (!product) {
         throw new Error(`Product not found: ${asin}. Use amazon_search to find valid products.`);
       }

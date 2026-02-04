@@ -33,7 +33,7 @@ export function createAmazonSearchTool(_api: OpenClawPluginApi) {
       const maxResults = typeof params.maxResults === "number" ? params.maxResults : 5;
 
       // Search products
-      const products = searchProducts(query, maxResults);
+      const products = await searchProducts(query, maxResults);
 
       if (products.length === 0) {
         return {
