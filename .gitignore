@@ -71,3 +71,9 @@ USER.md
 
 # local tooling
 .serena/
+.colosseum-credentials
+.colosseum-heartbeat.log
+.colosseum-heartbeat-state.json
+/.claude
+**/CLAUDE.md
+*.log
