@@ -162,7 +162,8 @@ export function createApp(): Hono {
 
   // ─── Health / Info ─────────────────────────────────────────────────
 
-  app.get("/", (c) => {
+  const healthResponse = (c: Parameters<Parameters<typeof app.get>[1]>[0]) => {
+    const baseUrl = new URL(c.req.url).origin;
     return c.json({
       name: "Open Commerce API",
       version: VERSION,
@@ -170,18 +171,21 @@ export function createApp(): Hono {
       network: NETWORK,
       usdcMint: USDC_MINT.devnet.toString(),
       endpoints: {
-        discovery: "GET /.well-known/agent.json",
-        search: "POST /api/search",
-        quote: "POST /api/quote",
-        order: "POST /api/order",
-        orderStatus: "GET /api/order/:orderId",
-        pay: "POST /api/pay",
-        verify: "GET /api/verify/:signature",
-        agentPurchase: "POST /api/agent/purchase",
-        orderConfirm: "POST /api/order/:orderId/confirm",
+        discovery: `GET ${baseUrl}/.well-known/agent.json`,
+        search: `POST ${baseUrl}/api/search`,
+        quote: `POST ${baseUrl}/api/quote`,
+        order: `POST ${baseUrl}/api/order`,
+        orderStatus: `GET ${baseUrl}/api/order/:orderId`,
+        pay: `POST ${baseUrl}/api/pay`,
+        verify: `GET ${baseUrl}/api/verify/:signature`,
+        agentPurchase: `POST ${baseUrl}/api/agent/purchase`,
+        orderConfirm: `POST ${baseUrl}/api/order/:orderId/confirm`,
       },
     });
-  });
+  };
+
+  app.get("/", healthResponse);
+  app.get("/api", healthResponse);
 
   // ─── Search Products ───────────────────────────────────────────────
 

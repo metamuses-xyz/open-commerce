@@ -55,7 +55,7 @@ export async function searchProducts(query: string, maxResults = 5): Promise<Pro
 
   return scored
     .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score)
+    .toSorted((a, b) => b.score - a.score)
     .slice(0, maxResults)
     .map((s) => s.product);
 }

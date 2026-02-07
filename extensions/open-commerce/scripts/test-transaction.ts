@@ -63,7 +63,9 @@ async function main() {
       const result: number[] = [];
       for (const c of b58) {
         let carry = ALPHABET.indexOf(c);
-        if (carry < 0) throw new Error(`Invalid base58 character: ${c}`);
+        if (carry < 0) {
+          throw new Error(`Invalid base58 character: ${c}`);
+        }
         for (let j = 0; j < result.length; j++) {
           carry += result[j] * 58;
           result[j] = carry & 0xff;
@@ -75,10 +77,12 @@ async function main() {
         }
       }
       for (const c of b58) {
-        if (c !== "1") break;
+        if (c !== "1") {
+          break;
+        }
         result.push(0);
       }
-      keypair = Keypair.fromSecretKey(new Uint8Array(result.reverse()));
+      keypair = Keypair.fromSecretKey(new Uint8Array(result.toReversed()));
     } catch {
       console.error("Error: Invalid PRIVATE_KEY format.");
       console.error("Accepted formats:");
