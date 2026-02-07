@@ -1,0 +1,20 @@
+{
+  "name": "@openclaw/open-commerce",
+  "version": "2026.2.2",
+  "description": "Buy Amazon products with USDC on Solana - AI-powered shopping agent with REST API",
+  "type": "module",
+  "scripts": {
+    "deploy": "vercel deploy --prod",
+    "dev": "node --import tsx api/server.ts",
+    "test:tx": "node --import tsx scripts/test-transaction.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.0",
+    "@solana/spl-token": "^0.4.0",
+    "@solana/web3.js": "^1.95.0",
+    "hono": "^4.0.0"
+  },
+  "openclaw": {
+    "extensions": ["./index.ts"]
+  }
+}

@@ -35,7 +35,7 @@ import {
 } from "@solana/web3.js";
 
 // Configuration
-const USDC_MINT_DEVNET = new PublicKey("Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr");
+const USDC_MINT_DEVNET = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
 const USDC_DECIMALS = 6;
 const NETWORK = "devnet";
 
@@ -52,11 +52,40 @@ async function main() {
 
   let keypair: Keypair;
   try {
+    // Try JSON byte array first: [1,2,3,...]
     const keyArray = JSON.parse(privateKeyJson);
     keypair = Keypair.fromSecretKey(new Uint8Array(keyArray));
   } catch {
-    console.error("Error: Invalid PRIVATE_KEY format. Provide JSON array of bytes.");
-    process.exit(1);
+    // Fall back to base58 string (Phantom/Solana wallet export format)
+    try {
+      const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+      const b58 = privateKeyJson.trim();
+      const result: number[] = [];
+      for (const c of b58) {
+        let carry = ALPHABET.indexOf(c);
+        if (carry < 0) throw new Error(`Invalid base58 character: ${c}`);
+        for (let j = 0; j < result.length; j++) {
+          carry += result[j] * 58;
+          result[j] = carry & 0xff;
+          carry >>= 8;
+        }
+        while (carry > 0) {
+          result.push(carry & 0xff);
+          carry >>= 8;
+        }
+      }
+      for (const c of b58) {
+        if (c !== "1") break;
+        result.push(0);
+      }
+      keypair = Keypair.fromSecretKey(new Uint8Array(result.reverse()));
+    } catch {
+      console.error("Error: Invalid PRIVATE_KEY format.");
+      console.error("Accepted formats:");
+      console.error("  - Base58 string (from Phantom): PRIVATE_KEY='5abc...'");
+      console.error("  - JSON byte array: PRIVATE_KEY='[1,2,3,...]'");
+      process.exit(1);
+    }
   }
 
   const fromPubkey = keypair.publicKey;

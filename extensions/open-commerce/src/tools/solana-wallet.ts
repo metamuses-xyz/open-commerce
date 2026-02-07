@@ -24,7 +24,7 @@ import type { OpenClawPluginApi } from "../../../../src/plugins/types.js";
 
 // Official USDC mint addresses
 const USDC_MINT = {
-  devnet: new PublicKey("Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"),
+  devnet: new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"),
   "mainnet-beta": new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
 };
 const USDC_DECIMALS = 6;

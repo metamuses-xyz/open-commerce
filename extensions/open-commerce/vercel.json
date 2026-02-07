@@ -1,16 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "name": "open-commerce-api",
   "version": 2,
-  "buildCommand": "pnpm install",
-  "installCommand": "pnpm install",
+  "buildCommand": "node -e \"const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));delete p.devDependencies;fs.writeFileSync('package.json',JSON.stringify(p,null,2))\" && npm install --legacy-peer-deps",
+  "installCommand": "echo skipping",
+  "outputDirectory": "public",
   "framework": null,
-  "functions": {
-    "api/index.ts": {
-      "runtime": "@vercel/node@3"
-    }
-  },
   "rewrites": [
+    {
+      "source": "/.well-known/:path*",
+      "destination": "/api"
+    },
     {
       "source": "/api/:path*",
       "destination": "/api"
@@ -27,6 +26,13 @@
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    },
+    {
+      "source": "/.well-known/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Content-Type", "value": "application/json" }
       ]
     }
   ]

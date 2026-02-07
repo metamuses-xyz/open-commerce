@@ -24,24 +24,3 @@ export async function getPriceQuote(usdAmount: number) {
 export function usdToUsdc(usdAmount: number): number {
   return usdAmount;
 }
-
-// Backwards compatibility exports (deprecated, kept for migration)
-export async function getSolUsdPrice(): Promise<number> {
-  // This is deprecated - we only use USDC now
-  // Return a placeholder value to prevent breaking code that still calls this
-  console.warn("getSolUsdPrice is deprecated - Open Commerce now uses USDC only");
-  return 0;
-}
-
-export async function usdToSol(_usdAmount: number): Promise<number> {
-  console.warn("usdToSol is deprecated - Open Commerce now uses USDC only");
-  return 0;
-}
-
-/**
- * Clear the price cache (for testing).
- * No-op for USDC since there's no volatile price to cache.
- */
-export function clearPriceCache() {
-  // No-op - USDC doesn't need price caching
-}
