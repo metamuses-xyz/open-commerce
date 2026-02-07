@@ -162,7 +162,7 @@ export function createApp(): Hono {
 
   // ─── Health / Info ─────────────────────────────────────────────────
 
-  const healthResponse = (c: Parameters<Parameters<typeof app.get>[1]>[0]) => {
+  function healthHandler(c: { req: { url: string }; json: (data: unknown) => Response }) {
     const baseUrl = new URL(c.req.url).origin;
     return c.json({
       name: "Open Commerce API",
@@ -182,10 +182,10 @@ export function createApp(): Hono {
         orderConfirm: `POST ${baseUrl}/api/order/:orderId/confirm`,
       },
     });
-  };
+  }
 
-  app.get("/", healthResponse);
-  app.get("/api", healthResponse);
+  app.get("/", (c) => healthHandler(c));
+  app.get("/api", (c) => healthHandler(c));
 
   // ─── Search Products ───────────────────────────────────────────────
 
